@@ -4,11 +4,8 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import Random
 import Json.Decode
-import Json.Encode as JE
 
 import Phoenix.Socket
-import Phoenix.Channel
-import Phoenix.Push
 
 import Model exposing (Model, initialModel)
 import Msg exposing (..)
@@ -16,6 +13,7 @@ import Subscriptions exposing (subscriptions)
 
 import Css.Main
 import Lib.Dice exposing (..)
+import Lib.Websocket as Websocket
 
 import Components.History.View
 
@@ -40,10 +38,7 @@ viewOption diceType =
 init : (Model, Cmd Msg)
 init =
   let
-    channel =
-      Phoenix.Channel.init "room:lobby"
-
-    (phxSocket, phxCmd) = Phoenix.Socket.join channel initialModel.phxSocket
+    (phxSocket, phxCmd) = Websocket.joinChannel initialModel.phxSocket "room:lobby"
   in
     ({ initialModel | phxSocket = phxSocket }
     , Cmd.map PhoenixMsg phxCmd
@@ -70,11 +65,7 @@ update msg model =
     NewFace newFace ->
       let
         model = { model | dieFace = newFace, history = addHistory model.history (model.diceType, newFace) }
-        payload = (JE.object [ ("roll", JE.int model.dieFace), ("diceType", JE.string (toString model.diceType)) ])
-        push' =
-          Phoenix.Push.init "new:roll" "room:lobby"
-            |> Phoenix.Push.withPayload payload
-        (phxSocket, phxCmd) = Phoenix.Socket.push push' model.phxSocket
+        (phxSocket, phxCmd) = Websocket.pushNewRoll model
       in
         ( { model | phxSocket = phxSocket }
         , Cmd.map PhoenixMsg phxCmd
