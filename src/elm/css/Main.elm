@@ -8,7 +8,7 @@ toCss =
 
 mainWrapperStyle =
   [ position relative
-  , marginTop (px 250)
+  , marginTop (pct 10)
   , marginLeft auto
   , marginRight auto
   , width (px 250)
