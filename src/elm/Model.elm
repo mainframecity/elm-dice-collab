@@ -1,14 +1,20 @@
-module Model exposing (Model, initialModel)
+module Model exposing (Model, Roll, initialModel)
 
 import Phoenix.Socket
 
 import Lib.Dice exposing (..)
 import Msg exposing (..)
 
+type alias Roll =
+  { username: String
+  , diceType: DiceType
+  , diceRoll: Int
+  }
+
 type alias Model =
   { dieFace : Int
   , diceType : DiceType
-  , history : List (DiceType, Int)
+  , history : List Roll
   , phxSocket : Phoenix.Socket.Socket Msg
   , isConnected : Bool
   , username : String

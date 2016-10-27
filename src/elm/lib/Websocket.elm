@@ -26,6 +26,13 @@ joinChannel phxSocket channelString =
   in
     (phxSocket, phxCmd)
 
+-- Binds the socket for different event handlers.
+bindSocket : PhxSocket -> PhxSocket
+bindSocket phxSocket =
+  phxSocket
+    |> Phoenix.Socket.withDebug
+    |> Phoenix.Socket.on "new:roll" "room:lobby" WSReceiveRoll
+
 -- Sets username from a string
 submitUsername : PhxSocket -> String -> PhxSocketWithCmd
 submitUsername phxSocket name =
@@ -42,7 +49,7 @@ submitUsername phxSocket name =
 pushNewRoll : Model -> PhxSocketWithCmd
 pushNewRoll model =
   let
-    payload = (JE.object [ ("roll", JE.int model.dieFace), ("diceType", JE.string (toString model.diceType)) ])
+    payload = (JE.object [ ("diceRoll", JE.int model.dieFace), ("diceType", JE.string (toString model.diceType)) ])
     push' =
       Phoenix.Push.init "new:roll" "room:lobby"
         |> Phoenix.Push.withPayload payload

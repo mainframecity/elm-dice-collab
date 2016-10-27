@@ -11,10 +11,11 @@ view : Model -> Html Msg
 view model =
     div [ class "historyComponent" ]
         (List.map
-            (\( diceType, diceRoll ) ->
+            (\roll ->
                 li [ class "historyRoll" ]
-                    [ p [ class "diceRoll" ] [ text (toString diceRoll) ]
-                    , p [ class "diceType" ] [ text (toString diceType) ]
+                    [ p [ class "username" ] [ text (toString roll.username) ]
+                    , p [ class "diceRoll" ] [ text (toString roll.diceRoll) ]
+                    , p [ class "diceType" ] [ text (toString roll.diceType) ]
                     ]
             )
             model.history

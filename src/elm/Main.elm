@@ -3,11 +3,12 @@ import Html.App as App
 import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import Random
-import Json.Decode
+import Json.Decode as JD exposing ((:=))
+import Debug
 
 import Phoenix.Socket
 
-import Model exposing (Model, initialModel)
+import Model exposing (Model, initialModel, Roll)
 import Msg exposing (..)
 import Subscriptions exposing (subscriptions)
 
@@ -40,16 +41,23 @@ init =
   let
     (phxSocket, phxCmd) = Websocket.joinChannel initialModel.phxSocket "room:lobby"
   in
-    ({ initialModel | phxSocket = phxSocket }
+    ({ initialModel | phxSocket = Websocket.bindSocket phxSocket }
     , Cmd.map PhoenixMsg phxCmd
     )
 
-addHistory : List (DiceType, Int) -> (DiceType, Int) -> List (DiceType, Int)
+addHistory : List Model.Roll -> Model.Roll -> List Model.Roll
 addHistory history newRoll =
   if List.length history == 10 then
      newRoll :: (List.take 9 history)
   else
     newRoll :: history
+
+rollMessageDecoder : JD.Decoder Model.Roll
+rollMessageDecoder =
+  JD.object3 Model.Roll
+    ("username" := JD.string)
+    ("diceType" := JD.string `JD.andThen` diceTypeDecoder)
+    ("diceRoll" := JD.int)
 
 -- UPDATE
 
@@ -59,12 +67,12 @@ update msg model =
     SetDice diceType ->
       ({ model | diceType = diceType }, Cmd.none)
 
-    Roll ->
+    Msg.Roll ->
       (model, Random.generate NewFace (rollDice model.diceType))
 
     NewFace newFace ->
       let
-        model = { model | dieFace = newFace, history = addHistory model.history (model.diceType, newFace) }
+        model = { model | dieFace = newFace }
         (phxSocket, phxCmd) = Websocket.pushNewRoll model
       in
         ( { model | phxSocket = phxSocket }
@@ -88,14 +96,25 @@ update msg model =
       in
         ({model | phxSocket = phxSocket, username = model.usernameTextfield}, Cmd.map PhoenixMsg phxCmd)
 
+    WSReceiveRoll raw ->
+      case JD.decodeValue rollMessageDecoder raw of
+        Ok roll ->
+          Debug.log (toString roll)
+          ( { model | history = addHistory model.history roll }
+          , Cmd.none
+          )
+        Err error ->
+          Debug.log "failed"
+          (model, Cmd.none)
+
 -- VIEW
 
 view : Model -> Html Msg
 view model =
   div [ (class "diceRollerContainer"), (Css.Main.toCss Css.Main.mainWrapperStyle) ]
     [ h1 [ ] [ text (toString model.dieFace) ]
-    , button [ (Css.Main.toCss Css.Main.buttonStyle), (onClick Roll) ] [ text "Roll" ]
-    , select [ (Css.Main.toCss Css.Main.selectStyle), (on "change" (Json.Decode.map SetDice diceDecoder)) ]
+    , button [ (Css.Main.toCss Css.Main.buttonStyle), (onClick Msg.Roll) ] [ text "Roll" ]
+    , select [ (Css.Main.toCss Css.Main.selectStyle), (on "change" (JD.map SetDice diceDecoder)) ]
       [ viewOption D4
       , viewOption D6
       , viewOption D8

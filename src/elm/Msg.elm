@@ -1,7 +1,9 @@
 module Msg exposing (..)
 
-import Lib.Dice exposing (DiceType)
 import Phoenix.Socket
+import Json.Encode as JE
+
+import Lib.Dice exposing (DiceType)
 
 type Msg
   = Roll
@@ -9,4 +11,5 @@ type Msg
   | NewFace Int
   | SetUsername String
   | SubmitUsername
+  | WSReceiveRoll JE.Value
   | PhoenixMsg (Phoenix.Socket.Msg Msg)

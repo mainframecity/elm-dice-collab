@@ -33,3 +33,14 @@ diceDecoder =
       "D12" -> Json.Decode.succeed D12
       "D20" -> Json.Decode.succeed D20
       _ -> Json.Decode.fail ("Invalid DiceType: " ++ val)
+
+diceTypeDecoder : String -> Json.Decode.Decoder DiceType
+diceTypeDecoder val =
+    case val of
+      "D4" -> Json.Decode.succeed D4
+      "D6" -> Json.Decode.succeed D6
+      "D8" -> Json.Decode.succeed D8
+      "D10" -> Json.Decode.succeed D10
+      "D12" -> Json.Decode.succeed D12
+      "D20" -> Json.Decode.succeed D20
+      _ -> Json.Decode.fail ("Invalid DiceType: " ++ val)
