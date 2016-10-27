@@ -1,0 +1,30 @@
+.historyComponent h1:nth-child(1) {
+  color: #000;
+}
+.historyComponent h1:nth-child(2) {
+  color: #444;
+}
+.historyComponent h1:nth-child(3) {
+  color: #666;
+}
+.historyComponent h1:nth-child(4) {
+  color: #777;
+}
+.historyComponent h1:nth-child(5) {
+  color: #888;
+}
+.historyComponent h1:nth-child(6) {
+  color: #aaa;
+}
+.historyComponent h1:nth-child(7) {
+  color: #bbb;
+}
+.historyComponent h1:nth-child(8) {
+  color: #ccc;
+}
+.historyComponent h1:nth-child(9) {
+  color: #ccc;
+}
+.historyComponent h1:nth-child(10) {
+  color: #ccc;
+}

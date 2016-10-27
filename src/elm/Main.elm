@@ -60,7 +60,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div [ Css.Main.toCss Css.Main.mainWrapperStyle ]
+  div [ (class "diceRollerContainer"), (Css.Main.toCss Css.Main.mainWrapperStyle) ]
     [ h1 [ ] [ text (toString model.dieFace) ]
     , button [ (Css.Main.toCss Css.Main.buttonStyle), (onClick Roll) ] [ text "Roll" ]
     , select [ (Css.Main.toCss Css.Main.selectStyle), (on "change" (Json.Decode.map SetDice diceDecoder)) ]
