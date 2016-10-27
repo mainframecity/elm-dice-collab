@@ -64,8 +64,11 @@ view model =
     [ h1 [ ] [ text (toString model.dieFace) ]
     , button [ (Css.Main.toCss Css.Main.buttonStyle), (onClick Roll) ] [ text "Roll" ]
     , select [ (Css.Main.toCss Css.Main.selectStyle), (on "change" (Json.Decode.map SetDice diceDecoder)) ]
-      [ viewOption D6
+      [ viewOption D4
+      , viewOption D6
+      , viewOption D8
       , viewOption D10
+      , viewOption D12
       , viewOption D20
       ]
     , Components.History.View.view model

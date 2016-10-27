@@ -11,6 +11,6 @@ type alias Model =
 initialModel : Model
 initialModel =
   { dieFace = 1
-  , diceType = D6
+  , diceType = D4
   , history = []
   }
