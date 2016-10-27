@@ -35,7 +35,7 @@ init : (Model, Cmd Msg)
 init =
   (initialModel, Cmd.none)
 
-addHistory : List Int -> Int -> List Int
+addHistory : List (DiceType, Int) -> (DiceType, Int) -> List (DiceType, Int)
 addHistory history newRoll =
   if List.length history == 10 then
      newRoll :: (List.take 9 history)
@@ -54,7 +54,7 @@ update msg model =
       (model, Random.generate NewFace (rollDice model.diceType))
 
     NewFace newFace ->
-      ({ model | dieFace = newFace, history = addHistory model.history newFace }, Cmd.none)
+      ({ model | dieFace = newFace, history = addHistory model.history (model.diceType, newFace) }, Cmd.none)
 
 -- VIEW
 

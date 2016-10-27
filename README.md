@@ -2,6 +2,8 @@
 
 Standalone Elm client for collaborative dice rolling.
 
+![](screenshot.png)
+
 ### Installation
 
 - `yarn` or `npm install`

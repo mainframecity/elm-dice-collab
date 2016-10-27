@@ -5,9 +5,10 @@ import Lib.Dice exposing (..)
 type alias Model =
   { dieFace : Int
   , diceType : DiceType
-  , history : List Int
+  , history : List (DiceType, Int)
   }
 
+initialModel : Model
 initialModel =
   { dieFace = 1
   , diceType = D6

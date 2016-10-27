@@ -1,30 +1,49 @@
-.historyComponent h1:nth-child(1) {
+.historyComponent li:nth-child(1) {
   color: #000;
 }
-.historyComponent h1:nth-child(2) {
+.historyComponent li:nth-child(2) {
   color: #444;
 }
-.historyComponent h1:nth-child(3) {
+.historyComponent li:nth-child(3) {
   color: #666;
 }
-.historyComponent h1:nth-child(4) {
+.historyComponent li:nth-child(4) {
   color: #777;
 }
-.historyComponent h1:nth-child(5) {
+.historyComponent li:nth-child(5) {
   color: #888;
 }
-.historyComponent h1:nth-child(6) {
+.historyComponent li:nth-child(6) {
   color: #aaa;
 }
-.historyComponent h1:nth-child(7) {
+.historyComponent li:nth-child(7) {
   color: #bbb;
 }
-.historyComponent h1:nth-child(8) {
+.historyComponent li:nth-child(8) {
   color: #ccc;
 }
-.historyComponent h1:nth-child(9) {
+.historyComponent li:nth-child(9) {
   color: #ccc;
 }
-.historyComponent h1:nth-child(10) {
+.historyComponent li:nth-child(10) {
   color: #ccc;
+}
+
+.historyComponent .historyRoll {
+  list-style: none;
+}
+
+.historyComponent .diceRoll,
+.historyComponent .diceType {
+  display: inline-block;
+  margin: 10px;
+}
+
+.historyComponent .diceRoll {
+  font-weight: 600;
+}
+
+.historyComponent .diceType {
+  font-weight: 300;
+  font-style: italic;
 }
