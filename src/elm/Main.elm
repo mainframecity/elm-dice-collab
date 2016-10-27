@@ -2,13 +2,13 @@ import Html exposing (..)
 import Html.App as App
 import Html.Events exposing (..)
 import Html.Attributes exposing (..)
+import Json.Decode as JD
 import Random
-import Json.Decode as JD exposing ((:=))
 import Debug
 
 import Phoenix.Socket
 
-import Model exposing (Model, initialModel, Roll)
+import Model exposing (Model, initialModel)
 import Msg exposing (..)
 import Subscriptions exposing (subscriptions)
 
@@ -45,19 +45,12 @@ init =
     , Cmd.map PhoenixMsg phxCmd
     )
 
-addHistory : List Model.Roll -> Model.Roll -> List Model.Roll
+addHistory : List LoggedRoll -> LoggedRoll -> List LoggedRoll
 addHistory history newRoll =
   if List.length history == 10 then
      newRoll :: (List.take 9 history)
   else
     newRoll :: history
-
-rollMessageDecoder : JD.Decoder Model.Roll
-rollMessageDecoder =
-  JD.object3 Model.Roll
-    ("username" := JD.string)
-    ("diceType" := JD.string `JD.andThen` diceTypeDecoder)
-    ("diceRoll" := JD.int)
 
 -- UPDATE
 
@@ -97,14 +90,12 @@ update msg model =
         ({model | phxSocket = phxSocket, username = model.usernameTextfield}, Cmd.map PhoenixMsg phxCmd)
 
     WSReceiveRoll raw ->
-      case JD.decodeValue rollMessageDecoder raw of
+      case JD.decodeValue loggedRollDecoder raw of
         Ok roll ->
-          Debug.log (toString roll)
           ( { model | history = addHistory model.history roll }
           , Cmd.none
           )
         Err error ->
-          Debug.log "failed"
           (model, Cmd.none)
 
 -- VIEW
