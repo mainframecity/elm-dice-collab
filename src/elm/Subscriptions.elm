@@ -1,8 +1,12 @@
 module Subscriptions exposing (subscriptions)
 
+import Phoenix.Socket
+import Phoenix.Channel
+import Phoenix.Push
+
 import Model exposing (Model)
-import Msg exposing (Msg)
+import Msg exposing (..)
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-  Sub.none
+  Phoenix.Socket.listen model.phxSocket PhoenixMsg

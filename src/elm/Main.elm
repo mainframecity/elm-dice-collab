@@ -4,6 +4,11 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import Random
 import Json.Decode
+import Json.Encode as JE
+
+import Phoenix.Socket
+import Phoenix.Channel
+import Phoenix.Push
 
 import Model exposing (Model, initialModel)
 import Msg exposing (..)
@@ -31,9 +36,18 @@ viewOption diceType =
     [ value <| toString diceType ]
     [ text <| toString diceType ]
 
+-- Initially connect to the 'room:lobby' channel.
 init : (Model, Cmd Msg)
 init =
-  (initialModel, Cmd.none)
+  let
+    channel =
+      Phoenix.Channel.init "room:lobby"
+
+    (phxSocket, phxCmd) = Phoenix.Socket.join channel initialModel.phxSocket
+  in
+    ({ initialModel | phxSocket = phxSocket }
+    , Cmd.map PhoenixMsg phxCmd
+    )
 
 addHistory : List (DiceType, Int) -> (DiceType, Int) -> List (DiceType, Int)
 addHistory history newRoll =
@@ -54,7 +68,25 @@ update msg model =
       (model, Random.generate NewFace (rollDice model.diceType))
 
     NewFace newFace ->
-      ({ model | dieFace = newFace, history = addHistory model.history (model.diceType, newFace) }, Cmd.none)
+      let
+        model = { model | dieFace = newFace, history = addHistory model.history (model.diceType, newFace) }
+        payload = (JE.object [ ("roll", JE.int model.dieFace), ("diceType", JE.string (toString model.diceType)) ])
+        push' =
+          Phoenix.Push.init "new:roll" "room:lobby"
+            |> Phoenix.Push.withPayload payload
+        (phxSocket, phxCmd) = Phoenix.Socket.push push' model.phxSocket
+      in
+        ( { model | phxSocket = phxSocket }
+        , Cmd.map PhoenixMsg phxCmd
+        )
+
+    PhoenixMsg msg ->
+      let
+        ( phxSocket, phxCmd ) = Phoenix.Socket.update msg model.phxSocket
+      in
+        ( { model | phxSocket = phxSocket }
+        , Cmd.map PhoenixMsg phxCmd
+        )
 
 -- VIEW
 
