@@ -79,6 +79,15 @@ update msg model =
         , Cmd.map PhoenixMsg phxCmd
         )
 
+    SetUsername username ->
+      ({ model | usernameTextfield = username }, Cmd.none)
+
+    SubmitUsername ->
+      let
+        (phxSocket, phxCmd) = Websocket.submitUsername model.phxSocket model.usernameTextfield
+      in
+        ({model | phxSocket = phxSocket, username = model.usernameTextfield}, Cmd.map PhoenixMsg phxCmd)
+
 -- VIEW
 
 view : Model -> Html Msg
@@ -93,6 +102,10 @@ view model =
       , viewOption D10
       , viewOption D12
       , viewOption D20
+      ]
+    , div [class "usernameForm"] [input [ placeholder "Username", onInput SetUsername ] []
+      , div [class "usernameDisplay"] [ text (toString model.username) ]
+      , button [ (Css.Main.toCss Css.Main.buttonStyle), (onClick SubmitUsername) ] [ text "Set Username" ]
       ]
     , Components.History.View.view model
     ]

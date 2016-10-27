@@ -10,6 +10,9 @@ type alias Model =
   , diceType : DiceType
   , history : List (DiceType, Int)
   , phxSocket : Phoenix.Socket.Socket Msg
+  , isConnected : Bool
+  , username : String
+  , usernameTextfield : String
   }
 
 initialModel : Model
@@ -18,4 +21,7 @@ initialModel =
   , diceType = D4
   , history = []
   , phxSocket = Phoenix.Socket.init "ws://localhost:4000/socket/websocket"
+  , isConnected = False
+  , username = "Unnamed"
+  , usernameTextfield = ""
   }

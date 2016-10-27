@@ -9,8 +9,14 @@ import Phoenix.Channel
 import Model exposing (Model)
 import Msg exposing (..)
 
+type alias PhxSocketWithCmd =
+  ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
+
+type alias PhxSocket =
+  Phoenix.Socket.Socket Msg
+
 -- Joins a Phoenix Channel when given a phxSocket.
-joinChannel : Phoenix.Socket.Socket Msg -> String -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
+joinChannel : PhxSocket -> String -> PhxSocketWithCmd
 joinChannel phxSocket channelString =
   let
     channel =
@@ -20,8 +26,20 @@ joinChannel phxSocket channelString =
   in
     (phxSocket, phxCmd)
 
+-- Sets username from a string
+submitUsername : PhxSocket -> String -> PhxSocketWithCmd
+submitUsername phxSocket name =
+  let
+    payload = (JE.object [ ("username", JE.string name) ])
+    push' =
+      Phoenix.Push.init "set:username" "room:lobby"
+        |> Phoenix.Push.withPayload payload
+    (phxSocket, phxCmd) = Phoenix.Socket.push push' phxSocket
+  in
+    (phxSocket, phxCmd)
+
 -- Pushes a 'new:roll' message when given a model.
-pushNewRoll : Model -> ( Phoenix.Socket.Socket Msg, Cmd (Phoenix.Socket.Msg Msg) )
+pushNewRoll : Model -> PhxSocketWithCmd
 pushNewRoll model =
   let
     payload = (JE.object [ ("roll", JE.int model.dieFace), ("diceType", JE.string (toString model.diceType)) ])

@@ -7,4 +7,6 @@ type Msg
   = Roll
   | SetDice DiceType
   | NewFace Int
+  | SetUsername String
+  | SubmitUsername
   | PhoenixMsg (Phoenix.Socket.Msg Msg)
