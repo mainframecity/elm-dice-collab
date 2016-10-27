@@ -9,6 +9,7 @@ import Model exposing (Model, initialModel)
 import Msg exposing (..)
 import Subscriptions exposing (subscriptions)
 
+import Css.Main
 import Lib.Dice exposing (..)
 
 import Components.History.View
@@ -58,10 +59,10 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-  div []
-    [ h1 [] [ text (toString model.dieFace) ]
-    , button [ onClick Roll ] [ text "Roll" ]
-    , select [ on "change" (Json.Decode.map SetDice diceDecoder) ]
+  div [ Css.Main.toCss Css.Main.mainWrapperStyle ]
+    [ h1 [ ] [ text (toString model.dieFace) ]
+    , button [ (Css.Main.toCss Css.Main.buttonStyle), (onClick Roll) ] [ text "Roll" ]
+    , select [ (Css.Main.toCss Css.Main.selectStyle), (on "change" (Json.Decode.map SetDice diceDecoder)) ]
       [ viewOption D6
       , viewOption D10
       , viewOption D20
