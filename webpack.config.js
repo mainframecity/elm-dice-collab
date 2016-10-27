@@ -12,13 +12,13 @@ var TARGET_ENV = process.env.npm_lifecycle_event === 'build' ? 'production' : 'd
 // common webpack config
 var commonConfig = {
   output: {
-    path:       path.resolve( __dirname, 'dist/' ),
+    path: path.resolve( __dirname, 'dist/' ),
     filename: '[hash].js',
   },
 
   resolve: {
     modulesDirectories: ['node_modules'],
-    extensions:         ['', '.js', '.elm']
+    extensions: ['', '.js', '.elm']
   },
 
   module: {
@@ -34,37 +34,39 @@ var commonConfig = {
   plugins: [
     new HtmlWebpackPlugin({
       template: 'src/static/index.html',
-      inject:   'body',
+      inject: 'body',
       filename: 'index.html'
     })
   ],
 
-  postcss: [ autoprefixer( { browsers: ['last 2 versions'] } ) ],
-
+  postcss: [
+    autoprefixer({
+      browsers: ['last 2 versions']
+    })
+  ]
 }
 
 // additional webpack settings for local env (when invoked by 'npm start')
-if ( TARGET_ENV === 'development' ) {
-  console.log( 'Serving locally...');
+if (TARGET_ENV === 'development') {
+  console.log('Serving locally...');
 
-  module.exports = merge( commonConfig, {
-
+  module.exports = merge(commonConfig, {
     entry: [
       'webpack-dev-server/client?http://localhost:8080',
       path.join( __dirname, 'src/static/index.js' )
     ],
 
     devServer: {
-      inline:   true,
+      inline: true,
       progress: true
     },
 
     module: {
       loaders: [
         {
-          test:    /\.elm$/,
+          test: /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
-          loader:  'elm-hot!elm-webpack?verbose=true&warn=true'
+          loader: 'elm-hot!elm-webpack?verbose=true&warn=true'
         },
         {
           test: /\.(css)$/,
@@ -76,28 +78,26 @@ if ( TARGET_ENV === 'development' ) {
         }
       ]
     }
-
   });
 }
 
 // additional webpack settings for prod env (when invoked via 'npm run build')
-if ( TARGET_ENV === 'production' ) {
-  console.log( 'Building for prod...');
+if (TARGET_ENV === 'production') {
+  console.log('Building for prod...');
 
-  module.exports = merge( commonConfig, {
-
-    entry: path.join( __dirname, 'src/static/index.js' ),
+  module.exports = merge(commonConfig, {
+    entry: path.join( __dirname, 'src/static/index.js'),
 
     module: {
       loaders: [
         {
-          test:    /\.elm$/,
+          test: /\.elm$/,
           exclude: [/elm-stuff/, /node_modules/],
-          loader:  'elm-webpack'
+          loader: 'elm-webpack'
         },
         {
           test: /\.(css)$/,
-          loader: ExtractTextPlugin.extract( 'style-loader', [
+          loader: ExtractTextPlugin.extract('style-loader', [
             'css-loader',
             'postcss-loader'
           ])
@@ -119,15 +119,15 @@ if ( TARGET_ENV === 'production' ) {
       new webpack.optimize.OccurenceOrderPlugin(),
 
       // extract CSS into a separate file
-      new ExtractTextPlugin( './[hash].css', { allChunks: true } ),
+      new ExtractTextPlugin('./[hash].css', {
+        allChunks: true
+      }),
 
       // minify & mangle JS/CSS
       new webpack.optimize.UglifyJsPlugin({
-          minimize:   true,
-          compressor: { warnings: false }
-          // mangle:  true
+        minimize:   true,
+        compressor: { warnings: false }
       })
     ]
-
   });
 }
