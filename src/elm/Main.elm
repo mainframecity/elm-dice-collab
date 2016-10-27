@@ -14,6 +14,7 @@ import Lib.Dice exposing (..)
 
 import Components.History.View
 
+main : Program Never
 main =
   App.program
     { init = init
