@@ -58,10 +58,14 @@ update : Msg -> Model -> (Model, Cmd Msg)
 update msg model =
   case msg of
     SetDice diceType ->
-      ({ model | diceType = diceType }, Cmd.none)
+      ( { model | diceType = diceType }
+      , Cmd.none
+      )
 
     Msg.Roll ->
-      (model, Random.generate NewFace (rollDice model.diceType))
+      ( model
+      , Random.generate NewFace (rollDice model.diceType)
+      )
 
     NewFace newFace ->
       let
@@ -81,7 +85,9 @@ update msg model =
         )
 
     SetUsername username ->
-      ({ model | usernameTextfield = username }, Cmd.none)
+      ( { model | usernameTextfield = username }
+      , Cmd.none
+      )
 
     SubmitUsername ->
       let
