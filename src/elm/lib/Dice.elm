@@ -1,7 +1,8 @@
 module Lib.Dice exposing (..)
 
 import Random
-import Json.Decode as JD exposing ((:=))
+import Json.Decode as JD exposing (Decoder, succeed, (:=))
+import Json.Decode.Extra exposing ((|:))
 import Html.Events
 
 type DiceType
@@ -18,13 +19,6 @@ type alias LoggedRoll =
   , diceRoll: Int
   }
 
-loggedRollDecoder : JD.Decoder LoggedRoll
-loggedRollDecoder =
-  JD.object3 LoggedRoll
-    ("username" := JD.string)
-    ("diceType" := JD.string `JD.andThen` diceTypeDecoder)
-    ("diceRoll" := JD.int)
-
 rollDice : DiceType -> Random.Generator Int
 rollDice diceType =
   case diceType of
@@ -35,19 +29,18 @@ rollDice diceType =
     D12 -> (Random.int 1 12)
     D20 -> (Random.int 1 20)
 
-diceDecoder : JD.Decoder DiceType
-diceDecoder =
-  Html.Events.targetValue `JD.andThen` \val ->
-    case val of
-      "D4" -> JD.succeed D4
-      "D6" -> JD.succeed D6
-      "D8" -> JD.succeed D8
-      "D10" -> JD.succeed D10
-      "D12" -> JD.succeed D12
-      "D20" -> JD.succeed D20
-      _ -> JD.fail ("Invalid DiceType: " ++ val)
+loggedRollDecoder : Decoder LoggedRoll
+loggedRollDecoder =
+  JD.succeed LoggedRoll
+    |: ("username" := JD.string)
+    |: ("diceType" := JD.string `JD.andThen` diceTypeDecoder)
+    |: ("diceRoll" := JD.int)
 
-diceTypeDecoder : String -> JD.Decoder DiceType
+diceDecoder : Decoder DiceType
+diceDecoder =
+  Html.Events.targetValue `JD.andThen` diceTypeDecoder
+
+diceTypeDecoder : String -> Decoder DiceType
 diceTypeDecoder val =
     case val of
       "D4" -> JD.succeed D4
