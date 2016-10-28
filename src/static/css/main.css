@@ -47,3 +47,7 @@
   font-weight: 300;
   font-style: italic;
 }
+
+.usernameForm .usernameDisplay {
+  margin: 15px;
+}

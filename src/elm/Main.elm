@@ -4,7 +4,6 @@ import Html.Events exposing (..)
 import Html.Attributes exposing (..)
 import Json.Decode as JD
 import Random
-import Debug
 
 import Phoenix.Socket
 
@@ -119,9 +118,12 @@ view model =
       , viewOption D12
       , viewOption D20
       ]
-    , div [class "usernameForm"] [input [ placeholder "Username", onInput SetUsername ] []
-      , div [class "usernameDisplay"] [ text (toString model.username) ]
-      , button [ (Css.Main.toCss Css.Main.buttonStyle), (onClick SubmitUsername) ] [ text "Set Username" ]
+    , div [class "usernameForm"]
+      [ div [class "usernameDisplay"] [ text ("Username: " ++ model.username) ]
+      , div [class "usernameInput"]
+        [ input [ placeholder "Username", onInput SetUsername ] []
+        , button [ (Css.Main.toCss Css.Main.buttonStyle), (onClick SubmitUsername) ] [ text "Set Username" ]
+        ]
       ]
     , Components.History.View.view model
     ]
